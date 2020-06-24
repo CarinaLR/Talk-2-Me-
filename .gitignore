@@ -1,0 +1,14 @@
+# Byte-compiled
+__pycache__/
+
+# Flask
+flask_session
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# VSCODE
+.vscode/
