@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
@@ -10,4 +10,5 @@ socketio = SocketIO(app)
 
 @app.route("/")
 def index():
-    return "Project 2: TODO"
+    headline = "Hello, welcome to Talk 2 Me!"
+    return render_template("index.html", headline=headline)

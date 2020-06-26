@@ -17,16 +17,16 @@
     />
     <link rel="stylesheet" href="/style.css" />
   </head>
-  <body>
-    <div>
-      <div>
+  <body id="main">
+    <div class="column">
+      <div id="navbar" class="row">
         {% block navbar %}{% endblock %}
       </div>
       <div>
         <div id="header">
           <h1>{{ headline }}</h1>
         </div>
-        <p>
+        <p class="column">
           Talk 2 Me! is your private chat room.
         </p>
         <div>

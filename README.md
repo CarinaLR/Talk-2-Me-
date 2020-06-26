@@ -10,5 +10,3 @@ Web Programming with Python and JavaScript.
 `JavaScript`
 `Socket.IO`
 `Flask`
-`Django`
-`PostgrSQL`
