@@ -10,5 +10,5 @@ socketio = SocketIO(app)
 
 @app.route("/")
 def index():
-    headline = "Hello, welcome to Talk 2 Me!"
+    headline = "User"
     return render_template("index.html", headline=headline)
