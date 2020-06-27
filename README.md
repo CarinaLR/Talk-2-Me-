@@ -10,3 +10,17 @@ Web Programming with Python and JavaScript.
 `JavaScript`
 `Socket.IO`
 `Flask`
+
+# Setup Flask Enviroment
+
+Create an enviroment
+`python3 -m venv venv`
+
+Activate the enviroment
+`. venv/bin/activate`
+
+Set the enviroment
+`export FLASK_APP=application.py`
+`export FLASK_DEBUG=1`
+`export FLASK_ENV=development`
+`flask run`
