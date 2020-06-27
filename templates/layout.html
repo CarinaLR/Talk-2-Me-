@@ -29,22 +29,23 @@
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.slim.js"></script>
   </head>
-  <body id="main">
-    <div class="column container">
-      <div id="navbar" class="row">
+  <body>
+    <div id="app">
+      <div id="navbar" class="row" style="width: 100%;">
         {% block navbar %}{% endblock %}
       </div>
-      <div>
+      <div id="main">
         <div id="header">
-          <h1>{{ headline }}</h1>
+          <img src="/static/img/pug.png" width="60" height="60" id="pic" class="border border-light rounded m-1"/>
+          <h1 style="color:gray">{{ headline }}</h1>
         </div>
         <p class="column" style="color: white;">
           Talk 2 Me! is your private chat room.
         </p>
-        <div>
+        <div class="column container">
           {% block body %}{% endblock %}
         </div>
       </div>
-    </div>
+    </div id="app">
   </body>
 </html>
