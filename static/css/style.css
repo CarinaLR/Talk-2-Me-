@@ -39,6 +39,10 @@ button {
   letter-spacing: 0.1em;
 }
 
+kbd h4 {
+  color: blue;
+}
+
 /* id */
 #header {
   width: 100%;
@@ -85,8 +89,8 @@ button {
 #pic {
   overflow-x: auto;
   text-align: center;
-  width: 60%;
-  height: 60%;
+  width: 30%;
+  height: 30%;
 }
 
 /* form */

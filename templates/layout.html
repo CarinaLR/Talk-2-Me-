@@ -28,6 +28,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.slim.js"></script>
+   <script src="/static/script/index.js"></script>
   </head>
   <body>
     <div id="app">
@@ -35,8 +36,10 @@
         {% block navbar %}{% endblock %}
       </div>
       <div id="main">
+        <div class="column" style="display: flex; align-items: center; width: 15%; height: 15%; ">
+          <img src="/static/img/pug.png" width="30" height="30" id="pic" class="border border-light rounded m-1"/>
+        </div>
         <div id="header">
-          <img src="/static/img/pug.png" width="60" height="60" id="pic" class="border border-light rounded m-1"/>
           <h1 style="color:gray">{{ headline }}</h1>
         </div>
         <p class="column" style="color: white;">

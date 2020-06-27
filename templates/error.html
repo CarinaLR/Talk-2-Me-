@@ -1,18 +1,16 @@
 {% extends "layout.html" %} {% block title %} Talk 2 Me! {% endblock %} {% block
-navbar %}
-<nav>
-  <a href="">Sing up</a>
-  <a href="">Login</a>
-  <a href="">Logout</a>
-</nav>
-{% endblock %} {% block body %}
-<div class="column">
-  <div class="column error">
-    <h1>TALK 2 ME!</h1>
+  navbar %}
+  <nav class='navbar justify-content-center'>
+    <h1 class="justify-content-end">Welcome to Talk 2 Me!</h1>
+  </nav>
+  {% endblock %} {% block body %}
+  <!--start chat-->
+  <div class='row h-75 no-gutters border'>
+    <div id="header">
+      <h1 style="color:gray">Sorry, {{ message }}</h1>
+    </div>
   </div>
-</div>
-<div>
-  <h2>Sorry, {{ message }}</h2>
-</div>
-<hr />
-{% endblock %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
