@@ -1,5 +1,8 @@
 //function to alert user name
 
 function hello() {
-  alert("Hi, what is your name");
+  let user = prompt("Hello, please enter your name", "username");
+  if (user !== null) {
+    document.getElementById("user").innerHTML = user;
+  }
 }

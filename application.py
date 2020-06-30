@@ -17,10 +17,10 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # Set variables
-    username = request.form.get('username')
+   # Set variable to hold username.
+    user = request.form.get('user')
 
     if request.method == "POST":
-        return render_template("index.html", headline=username)
-    elif not request.form.get("username"):
+        return render_template("index.html", headline=user)
+    elif not request.form.get("user"):
         return render_template("error.html", message="must be login")
