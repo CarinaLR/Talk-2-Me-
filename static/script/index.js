@@ -126,7 +126,7 @@ $(function () {
       $("#modalInput").val("");
     }
   });
-
+  //If the room is not private, all can read message
   socket.on("announce to all", (data) => {
     if (!privateWindow) {
       loadMessages(data);
@@ -136,7 +136,7 @@ $(function () {
       chooseUser($(this).text());
     });
   });
-
+  //Join function
   socket.on("joined", (data) => {
     loadMessages(data);
 
@@ -144,5 +144,54 @@ $(function () {
     $(".text-danger").on("click", () => {
       chooseUser($(this).text());
     });
+  });
+  //Left function
+  socket.on("left", (data) => {
+    loadMessages(data);
+  });
+  //Send user to a room
+  socket.on("announce to room", (data) => {
+    loadMessages(data);
+    $(".text-danger").on("click", () => {
+      chooseUser($(this).text());
+    });
+  });
+  //Add user and prevent user to close modal.
+  socket.on("add user", (data) => {
+    if (data["error"] !== "") {
+      window.setTimeout(() => {
+        $("#myModay").modal({ backdrop: "static", keyboard: flase });
+        $(".modal-title").text(data["error"]);
+        $("#modalInput").val("");
+        $("#modalButton").attr("disabled", true);
+      }, 900);
+    } else {
+      localStorage.setItem("user", data["user"]);
+      $("$user").text(localStorage.getItem("user"));
+      $("#General").clicl();
+      $("$input_msg").focus();
+    }
+  });
+  //Add channel
+  socket.on("add channel", (data) => {
+    if (data["error"] !== "") {
+      window.setTimeout(() => {
+        $("#myModal").modal({ backdrop: "static", keyboard: false });
+        $(".modal-title").text(data["error"]);
+        $("#modalInput").val("");
+        $("#modalButton").attr("disabled", true);
+      }, 900);
+    } else {
+      appendChannel(data["channel"]);
+      $("#channels_history li:last").addClass("active");
+      $("#channels_history li:last").click();
+      inRoom = true;
+
+      let removeHash = $("#channels_history li:last").text().slice(1);
+      localStorage.setItem("active_channel", removeHash);
+      $("#channels_history").scrollTop(500000);
+      $("$input_msg").focus();
+      socket.emit("last updates", { channel: data["channel"] });
+    }
   });
 });

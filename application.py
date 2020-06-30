@@ -52,3 +52,35 @@ def send_msg(data):
 @socketio.on('come back to general')
 def restart():
     emit('announce to all', {'channels': channels_kv}, broadcast=True)
+
+
+@socketio.on('new channel')
+def new_channel(data):
+    error = ""
+
+    if data['channel_kv'] in channels_history or data['channel_kv'] == 'General':
+        error = 'Channel already exist, please create new channel'
+    elif " " in data['channel_kv']:
+        error = 'Please enter a name for your channel without space'
+    else:
+        channels_history.append(data['channel_kv'])
+        channels_kv[data['channels_kv']] = []
+    emit('add channel', {'channel_kv': data['channel_kv'], 'error': error})
+
+
+@socketio.on('update users channels')
+def update_channel(data):
+    channels_kv = data['channel_kv']
+    emit('update channels', {'channel_kv': channels_kv}, boradcast=True)
+
+
+@socketio.on('leave')
+def disconnected(data):
+    room = data['channel_kv']
+    leave_room(room)
+    message = {'text': data["current_msg"],
+               'user': data['user'], "time": data['time']}
+    channels_kv[data["channels_kv"]].append(message)
+    if (len(channels_kv[data["channels_kv"]]) > limit):
+        channels_kv[data["channels_kv"]].pop(0)
+    emit("disconnected", {'channels_kv': channels_kv}, room=room)
