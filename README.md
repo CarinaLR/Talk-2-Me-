@@ -24,3 +24,7 @@ Set the enviroment
 `export FLASK_DEBUG=1`
 `export FLASK_ENV=development`
 `flask run`
+
+![](/static/img/talk2me_home.png)
+
+![](/static/img/hi_channel.png)
