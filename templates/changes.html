@@ -1,0 +1,26 @@
+<div id="navbar" class="row" style="width: 100%;">
+  {% block navbar %}{% endblock %}
+</div>
+<div id="main">
+  <div
+    class="column"
+    style="display: flex; align-items: center; width: 15%; height: 15%;"
+  >
+    <img
+      src="/static/img/pug.png"
+      width="30"
+      height="30"
+      id="pic"
+      class="border border-light rounded m-1"
+    />
+  </div>
+  <div id="header">
+    <h1 id="user" style="color: gray;">{{ headline }}</h1>
+  </div>
+  <p class="column" style="color: white;">
+    Talk 2 Me! is your private chat room.
+  </p>
+  <div class="column container">
+    {% block body %}{% endblock %}
+  </div>
+</div>

@@ -9,43 +9,24 @@ navbar %}
   <button onclick="hello() ">Start</button>
 </div>
 <!--start chat-->
-<div class='row h-75 no-gutters border'>
-  <div   class='col-9 bg-light border p-3 d-flex flex-column justify-content-end h-100' >
-      <div id='messages'>
-      <!--messages-->
-      </div>
-      <input type='text' class="  form-control text-right " maxlength="80" id="input_msg">
-  </div>
-  <div class='col-3  text-center'>
-    <h4 class='pl-1 pt-2'>Channels&nbsp; <kbd>+</kbd></h4>
-      <ul id='channels_history' class="list-group text-center h-50 m-1 ">
-      <!--list of channels-->
-      </ul>
-      <h2 id='username' class='text-center bg-info m-1 rounded '></h2>
-      <h4 class='pl-1'>Users</h4>
-      <ul id='inbox' class="list-group h-25 border border-light rounded m-1">
-      <!--list of users (private conversation)-->
-      </ul>
-  </div>
-</div>
-<div class="modal fade" id="myModal" >
-  <div class="modal-dialog">
-      <div class="modal-content ">
-          <!-- Modal Header -->
-          <div class="modal-header">
-              <h4 class="modal-title "></h4>
-          </div>
-          <!-- Modal body -->
-          <div class="modal-body">
-              <input id='modalInput' type='text' class="form-control w-50"  >
-          </div>
-          <!-- Modal footer -->
-          <div class="modal-footer">
-              <button id='modalButton' type="button" class="btn btn-danger" data-dismiss="modal" disabled>Ok</button>
-          </div>
-      </div>
-  </div>
-</div>
+<h2>Create a new channel or join an existent one!</h2>
+    <form action="/create" method="post">
+        <div class="form-group">
+            <input type="text" class="form-control" name="channel" id="channel" autofocus>
+        </div>
+        <button class="btn btn-primary" type="submit">Create</button>
+    </form>
+
+    <script>
+
+        if (localStorage.getItem('last_channel')) {
+            // Redirect to last channel
+            let channel = localStorage.getItem('last_channel');
+            window.location.replace('/channels/' + channel);
+        }
+
+    </script>
+    <!-- if user is in session -->
       {% endblock %}
     </div>
   </div>

@@ -1,86 +1,163 @@
 import os
 
 
-from flask import Flask, render_template, request
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask import Flask, render_template, session, request, redirect
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+# app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SECRET_KEY"] = "my chatroom secret"
 socketio = SocketIO(app)
 
 # Global variables
-channels_kv = {}
-channels_kv['General'] = []
-channels_history = []
-privateMessage = {}
-allUsers = {}
-limit = 100
+
+# Keep track of channels created (Check for channel name)
+channelsCreated = []
+
+# Keep track of users logged (Check for username)
+usersLogged = []
+
+# Instanciate a dict
+channelsMessages = dict()
 
 
 @app.route("/")
 def index():
     headline = "User"
-    return render_template("index.html", headline=headline)
+    return render_template("index.html", headline=headline, channels=channelsCreated)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    ''' Save the username on a Flask session
+    after the user submit the sign in form '''
+
+    # Forget any user
+    session.clear()
+
    # Set variable to hold username.
     user = request.form.get('user')
 
     if request.method == "POST":
-        return render_template("index.html", headline=user)
-    elif not request.form.get("user"):
-        return render_template("error.html", message="must be login")
+        if len(user) < 1 or user == '':
+            return render_template("error.html", message="must enter a username")
 
+        if user in usersLogged:
+            return render_template("error.html", message="user already exists!")
 
-@socketio.on('connect')
-def start():
-    emit("load channels", {'channels': channels_kv})
+        usersLogged.append(user)
 
+        session['user'] = user
 
-@socketio.on('submit to all')
-def send_msg(data):
-    message = {'text': data['current_msg'],
-               'username': data['user'], 'time': data['time']}
-    channels_kv['General'].append(message)
-    if(len(channels_kv['General']) > limit):
-        channels_kv['General'].pop(0)
-    emit('announce to all', {'channels': channels_kv}, broadcast=True)
+        # Remember the user session on a cookie if the browser is closed.
+        session.permanent = True
 
-
-@socketio.on('come back to general')
-def restart():
-    emit('announce to all', {'channels': channels_kv}, broadcast=True)
-
-
-@socketio.on('new channel')
-def new_channel(data):
-    error = ""
-
-    if data['channel_kv'] in channels_history or data['channel_kv'] == 'General':
-        error = 'Channel already exist, please create new channel'
-    elif " " in data['channel_kv']:
-        error = 'Please enter a name for your channel without space'
+        return redirect("/")
     else:
-        channels_history.append(data['channel_kv'])
-        channels_kv[data['channels_kv']] = []
-    emit('add channel', {'channel_kv': data['channel_kv'], 'error': error})
+        return render_template("index.html", headline=user)
 
 
-@socketio.on('update users channels')
-def update_channel(data):
-    channels_kv = data['channel_kv']
-    emit('update channels', {'channel_kv': channels_kv}, boradcast=True)
+@app.route("/logout", methods=['GET'])
+def logout():
+    """ Logout user from list and delete cookie."""
+
+    # Remove from list
+    try:
+        usersLogged.remove(session['user'])
+    except ValueError:
+        pass
+
+    # Delete cookie
+    session.clear()
+
+    return redirect("/")
 
 
-@socketio.on('leave')
-def disconnected(data):
-    room = data['channel_kv']
+@app.route("/create", methods=['GET', 'POST'])
+def create():
+    """ Create a channel and redirect to its page """
+
+    # Get channel name from form
+    newChannel = request.form.get("channel")
+
+    if request.method == "POST":
+
+        if newChannel in channelsCreated:
+            return render_template("error.html", message="channel already exists!")
+
+        # Add channel to global list of channels
+        channelsCreated.append(newChannel)
+
+        # Add channel to global dict of channels with messages
+        channelsMessages[newChannel] = dict()
+
+        return redirect("/channels/" + newChannel)
+
+    else:
+
+        return render_template("index.html", channels=channelsCreated)
+
+
+@app.route("/channels/<channel>", methods=['GET', 'POST'])
+def enter_channel(channel):
+    """ Dispaly channel page to send and receive messages """
+
+    # Updates current channel
+    session['current_channel'] = channel
+
+    if request.method == "POST":
+
+        return redirect("/")
+    else:
+        return render_template("channel.html", channels=channelsCreated, messages=channelsMessages[channel])
+
+
+@socketio.on("joined", namespace='/')
+def joined():
+    """ Announce user connected int channel """
+
+    # Save current channel to join room.
+    room = session.get('current_channel')
+
+    join_room(room)
+
+    emit('status', {
+        'userJoined': session.get('user'),
+        'channel': room,
+        'msg': session.get('user') + ' has entered the channel'},
+        room=room)
+
+
+@socketio.on("left", namespace='/')
+def left():
+    """ Announce user has left the channel """
+
+    room = session.get('current_channel')
+
     leave_room(room)
-    message = {'text': data["current_msg"],
-               'user': data['user'], "time": data['time']}
-    channels_kv[data["channels_kv"]].append(message)
-    if (len(channels_kv[data["channels_kv"]]) > limit):
-        channels_kv[data["channels_kv"]].pop(0)
-    emit("disconnected", {'channels_kv': channels_kv}, room=room)
+
+    emit('status', {
+        'msg': session.get('user') + ' has left the channel'},
+        room=room)
+
+
+@socketio.on('send message')
+def send_msg(msg, timestamp):
+    """ Message with timestamp and broadcast to all """
+
+    # Broadcast only to users on the same channel.
+    room = session.get('current_channel')
+
+    # Save 100 messages and pass them when a user joins a specific channel.
+
+    if len(channelsMessages[room]) > 100:
+        # Pop the oldest message
+        channelsMessages[room].popleft()
+
+    channelsMessages[room].append([timestamp, session.get('username'), msg])
+
+    emit('announce message', {
+        'user': session.get('user'),
+        'timestamp': timestamp,
+        'msg': msg},
+        room=room)

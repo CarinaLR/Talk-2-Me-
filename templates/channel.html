@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+<!--Current Channel-->
+{% block title %} Talk 2 Me! {% endblock %} {% block navbar %}
+<nav class="navbar justify-content-center">
+  <h1 class="justify-content-end">Welcome to Talk 2 Me!</h1>
+</nav>
+{% endblock %}
+<!-- if user is in session -->
+{% block body %}
+<!--login-->
+<div style="padding: 10px;">
+  <button onclick="hello() ">Start</button>
+</div>
+<!--start chat-->
+<h2>Create a new channel or join an existent one!</h2>
+<form action="/create" method="post">
+  <div class="form-group">
+    <input
+      type="text"
+      class="form-control"
+      name="channel"
+      id="channel"
+      autofocus
+    />
+  </div>
+  <button class="btn btn-primary" type="submit">Create</button>
+</form>
+
+<script>
+  if (localStorage.getItem("last_channel")) {
+    // Redirect to last channel
+    let channel = localStorage.getItem("last_channel");
+    window.location.replace("/channels/" + channel);
+  }
+</script>
+<!-- if user is in session -->
+{% endblock %}
